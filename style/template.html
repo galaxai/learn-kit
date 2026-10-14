@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TOPIC — notes</title>
+<link rel="icon" href="data:,"><!-- no favicon: stops the browser asking for /favicon.ico (404) -->
+<!-- Both themes are linked. They follow the OS by default; the toggle overrides. -->
+<!-- Adjust the ../ depth to reach the repo's style/ directory from this note.
+     onerror loads the published copy (learn-kit on jsDelivr) when the local file is missing,
+     e.g. in T3 Code's file viewer, which shows the page with no folder around it. -->
+<link rel="stylesheet" href="../style/notes-light.css" id="theme-light" media="(prefers-color-scheme: light)" onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/gh/galaxai/learn-kit@main/style/notes-light.css'">
+<link rel="stylesheet" href="../style/notes-dark.css"  id="theme-dark"  media="(prefers-color-scheme: dark)" onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/gh/galaxai/learn-kit@main/style/notes-dark.css'">
+</head>
+<body>
+<button class="theme-toggle" data-theme-toggle type="button">Theme</button>
+
+<!-- Shared arrowheads for every inline SVG on the page. Keep this once, near the top. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="ah"        viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah"        d="M0,0 L10,5 L0,10 z"/></marker>
+    <marker id="ah-blue"   viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah blue"   d="M0,0 L10,5 L0,10 z"/></marker>
+    <marker id="ah-teal"   viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah teal"   d="M0,0 L10,5 L0,10 z"/></marker>
+    <marker id="ah-green"  viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah green"  d="M0,0 L10,5 L0,10 z"/></marker>
+    <marker id="ah-yellow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah yellow" d="M0,0 L10,5 L0,10 z"/></marker>
+    <marker id="ah-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah orange" d="M0,0 L10,5 L0,10 z"/></marker>
+    <marker id="ah-red"    viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah red"    d="M0,0 L10,5 L0,10 z"/></marker>
+    <marker id="ah-violet" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah violet" d="M0,0 L10,5 L0,10 z"/></marker>
+    <marker id="ah-grey"   viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah grey"   d="M0,0 L10,5 L0,10 z"/></marker>
+  </defs>
+</svg>
+
+<main class="page">
+  <h1>TOPIC</h1>
+  <p class="meta"><span>Goal: ONE SENTENCE</span><span>YYYY-MM-DD</span></p>
+
+  <!-- Declare colour roles once; reuse them in every diagram, plot and <mark>. -->
+  <p class="legend">
+    <span class="key blue">Role A</span>
+    <span class="key green">Role B</span>
+    <span class="key red">Role C</span>
+  </p>
+
+  <!-- Content reads top to bottom: truths → motivated steps → goal.
+       Building blocks (see skills/notes/SKILL.md):
+         <div class="callout truth|why|click|warn|def">…</div>
+         <figure class="diagram"><svg viewBox="0 0 W H">…</svg><figcaption>…</figcaption></figure>
+         <details class="quiz"><summary>…</summary><ol class="options">…</ol><div class="answer">…</div></details>
+         <pre data-lang="python"><code>…</code></pre>
+  -->
+
+</main>
+
+<!-- Syntax highlighting for <pre data-lang="…"><code>. Same ../ depth as the stylesheets. -->
+<script src="../style/highlight.min.js"></script>
+<script>
+(function () {
+  var l = document.getElementById('theme-light'), d = document.getElementById('theme-dark');
+  function load() { try { return localStorage.getItem('notes-theme'); } catch (e) { return null; } }
+  function save(t) { try { localStorage.setItem('notes-theme', t); } catch (e) {} }
+  function apply(t) {
+    if (t === 'light')      { l.media = 'all';     d.media = 'not all'; }
+    else if (t === 'dark')  { l.media = 'not all'; d.media = 'all'; }
+    else { l.media = '(prefers-color-scheme: light)'; d.media = '(prefers-color-scheme: dark)'; }
+    document.documentElement.dataset.theme = t || 'system';
+  }
+  apply(load());
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest('[data-theme-toggle]')) return;
+    var cur = document.documentElement.dataset.theme;
+    var dark = cur === 'dark' || (cur !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
+    var next = dark ? 'light' : 'dark';
+    save(next);
+    apply(next);
+  });
+  // Highlight <pre data-lang="…"><code>; languages highlight.js lacks (text, …) stay plain.
+  function highlight() {
+    document.querySelectorAll('pre[data-lang] > code').forEach(function (c) {
+      var lang = c.parentElement.dataset.lang;
+      if (hljs.getLanguage(lang)) { c.classList.add('language-' + lang); hljs.highlightElement(c); }
+    });
+  }
+  if (window.hljs) highlight();
+  else {
+    var s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/gh/galaxai/learn-kit@main/style/highlight.min.js';
+    s.onload = highlight;
+    document.head.appendChild(s);
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,459 @@
+/* ==========================================================================
+   notes-dark.css   —  DARK theme for learning notes
+   --------------------------------------------------------------------------
+   notes-light.css and notes-dark.css are IDENTICAL below the ":root" block.
+   Only the tokens differ. If you change a rule, change it in BOTH files.
+   Authoring guide: ../skills/notes/SKILL.md
+   ========================================================================== */
+
+/* ---------- tokens (THIS BLOCK DIFFERS BETWEEN THE TWO FILES) ------------- */
+:root {
+  color-scheme: dark;
+
+  --canvas: #121214;        /* behind the page; carries the dot grid          */
+  --dot: #2a2a2e;           /* dot-grid colour                                 */
+  --surface: #1b1b1e;       /* the page and shape default fill                 */
+  --surface-2: #242428;     /* code blocks, table heads                        */
+  --text: #e6e6e3;          /* body text and default stroke (tldraw "black")   */
+  --muted: #9b9ba3;         /* captions, meta, secondary labels                */
+  --hairline: #333338;      /* borders that should stay quiet                  */
+  --on-solid: #121214;      /* text on a solid coloured shape                  */
+  --selection: #2c3a6b;
+
+  /* role colours: a strong ink for strokes/text, a tint for fills.
+     Keep meanings constant within a note (see guide). */
+  --blue: #7b95ff;     --blue-fill: #232c4d;
+  --teal: #3bc9db;     --teal-fill: #163a41;
+  --green: #4cd39a;    --green-fill: #173d2f;
+  --yellow: #f2c14e;   --yellow-fill: #423519;
+  --orange: #ff9350;   --orange-fill: #472a16;
+  --red: #ff7070;      --red-fill: #4a2222;
+  --violet: #d68af0;   --violet-fill: #3c2347;
+  --grey: #9aa0a6;     --grey-fill: #2d2f33;
+}
+/* ---------- end tokens ---------------------------------------------------- */
+
+
+/* ---------- base ---------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background-color: var(--canvas);
+  background-image: radial-gradient(var(--dot) 1px, transparent 1.2px);
+  background-size: 22px 22px;
+  color: var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size: 17px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: var(--selection); }
+
+.page {
+  max-width: 780px;
+  margin: 40px auto;
+  padding: 48px 56px 64px;
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+}
+
+@media (max-width: 860px) {
+  body { font-size: 16px; }
+  .page { margin: 0; padding: 24px 20px 48px; border: 0; }
+}
+
+/* ---------- headings & text ---------------------------------------------- */
+h1, h2, h3, h4 { line-height: 1.25; margin: 0 0 0.6em; font-weight: 700; letter-spacing: -0.01em; }
+h1 { font-size: 2rem; }
+h2 { font-size: 1.45rem; margin-top: 2.2em; }
+h2::after { content: ""; display: block; width: 36px; height: 3px; background: var(--text); margin-top: 8px; }
+h3 { font-size: 1.15rem; margin-top: 1.8em; }
+h4 { font-size: 1rem;  margin-top: 1.5em; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+
+p, ul, ol, table, blockquote, pre { margin: 0 0 1.1em; }
+p, li { max-width: 70ch; }
+ul, ol { padding-left: 1.4em; }
+li + li { margin-top: 0.25em; }
+
+a { color: var(--blue); text-decoration: underline; text-underline-offset: 2px; text-decoration-thickness: 1.5px; }
+a:hover { text-decoration-thickness: 2.5px; }
+
+strong { font-weight: 700; }
+small, .muted { color: var(--muted); }
+
+.meta { color: var(--muted); font-size: 0.92rem; margin: -0.4em 0 2em; }
+.meta > * + *::before { content: "·"; margin: 0 0.5em; }
+
+hr { border: 0; border-top: 1px dashed var(--hairline); margin: 2.2em 0; }
+
+blockquote {
+  border-left: 3px solid var(--grey);
+  margin-left: 0; padding: 0.2em 0 0.2em 1em;
+  color: var(--muted);
+}
+
+kbd {
+  font: 0.85em ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  padding: 1px 6px; border: 1px solid var(--text); border-bottom-width: 2px;
+  background: var(--surface-2);
+}
+
+/* colour-coded terms in prose: <mark class="blue">client</mark> */
+mark {
+  color: inherit; background: var(--grey-fill);
+  padding: 0 0.25em; border-bottom: 2px solid var(--grey);
+}
+mark.blue   { background: var(--blue-fill);   border-color: var(--blue); }
+mark.teal   { background: var(--teal-fill);   border-color: var(--teal); }
+mark.green  { background: var(--green-fill);  border-color: var(--green); }
+mark.yellow { background: var(--yellow-fill); border-color: var(--yellow); }
+mark.orange { background: var(--orange-fill); border-color: var(--orange); }
+mark.red    { background: var(--red-fill);    border-color: var(--red); }
+mark.violet { background: var(--violet-fill); border-color: var(--violet); }
+
+/* ---------- code ---------------------------------------------------------- */
+code, pre, samp {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+}
+code {
+  font-size: 0.88em;
+  background: var(--surface-2);
+  border: 1px solid var(--hairline);
+  padding: 0.08em 0.35em;
+}
+pre {
+  display: flow-root;
+  position: relative;
+  background: var(--surface-2);
+  border: 1px solid var(--hairline);
+  padding: 14px 16px;
+  overflow-x: auto;
+  font-size: 0.86rem;
+  line-height: 1.55;
+}
+pre code { background: none; border: 0; padding: 0; font-size: inherit; }
+pre[data-lang]::before {
+  content: attr(data-lang);
+  position: absolute; top: 0; right: 0;
+  font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--muted); padding: 3px 8px;
+  border-left: 1px solid var(--hairline); border-bottom: 1px solid var(--hairline);
+}
+
+/* syntax highlighting: highlight.js (style/highlight.min.js) tags tokens with
+   .hljs-* spans; colours come from the role tokens so both themes just work */
+.hljs-comment, .hljs-quote                                    { color: var(--muted); font-style: italic; }
+.hljs-keyword, .hljs-selector-tag, .hljs-doctag               { color: var(--violet); }
+.hljs-string, .hljs-regexp, .hljs-char.escape_                { color: var(--green); }
+.hljs-number, .hljs-literal, .hljs-symbol, .hljs-bullet       { color: var(--orange); }
+.hljs-title, .hljs-section, .hljs-selector-id,
+.hljs-selector-class                                          { color: var(--blue); }
+.hljs-type, .hljs-built_in, .hljs-name                        { color: var(--teal); }
+.hljs-attr, .hljs-attribute, .hljs-property,
+.hljs-variable, .hljs-template-variable                       { color: var(--red); }
+.hljs-meta, .hljs-subst                                       { color: var(--grey); }
+.hljs-addition { color: var(--green); background: var(--green-fill); }
+.hljs-deletion { color: var(--red);   background: var(--red-fill); }
+.hljs-emphasis { font-style: italic; }
+.hljs-strong   { font-weight: 700; }
+
+/* ---------- math ---------------------------------------------------------- */
+math { font-size: 1.05em; }
+.math-block { display: block; text-align: center; margin: 1.2em 0; overflow-x: auto; }
+
+/* ---------- tables -------------------------------------------------------- */
+table { border-collapse: collapse; width: 100%; font-size: 0.95rem; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--hairline); vertical-align: top; }
+th { background: var(--surface-2); border-bottom: 2px solid var(--text); font-weight: 700; }
+td code { white-space: nowrap; }
+
+/* ---------- callouts ------------------------------------------------------ */
+/* <div class="callout truth">…</div>  variants: truth why click warn def note */
+.callout {
+  display: flow-root;            /* sits beside a floated .sticky instead of wrapping it */
+  --c: var(--grey); --cf: var(--grey-fill);
+  border: 2px solid var(--c);
+  background: var(--cf);
+  padding: 14px 18px 12px;
+  margin: 1.6em 0;
+}
+.callout > :last-child { margin-bottom: 0; }
+.callout::before {
+  content: "Note";
+  display: block;
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--c); margin-bottom: 0.35em;
+}
+.callout.truth { --c: var(--green);  --cf: var(--green-fill); }
+.callout.truth::before { content: "Unconditional truth"; }
+.callout.why   { --c: var(--blue);   --cf: var(--blue-fill); }
+.callout.why::before   { content: "Why are we doing this?"; }
+.callout.click { --c: var(--yellow); --cf: var(--yellow-fill); }
+.callout.click::before { content: "The click"; }
+.callout.warn  { --c: var(--red);    --cf: var(--red-fill); }
+.callout.warn::before  { content: "Careful"; }
+.callout.def   { --c: var(--violet); --cf: var(--violet-fill); }
+.callout.def::before   { content: "Definition"; }
+.callout[data-label]::before { content: attr(data-label); }
+
+/* tldraw-style sticky note, floats beside the text */
+.sticky {
+  float: right; clear: right;
+  width: 240px; margin: 0.2em 0 1em 1.5em;
+  padding: 12px 14px;
+  background: var(--yellow-fill);
+  border: 1px solid var(--yellow);
+  font-size: 0.9rem; line-height: 1.5;
+}
+.sticky > :last-child { margin-bottom: 0; }
+@media (max-width: 860px) { .sticky { float: none; width: auto; margin: 1em 0; } }
+
+/* ---------- steps & compare ---------------------------------------------- */
+ol.steps { list-style: none; padding: 0; counter-reset: step; }
+ol.steps > li {
+  counter-increment: step;
+  position: relative; padding-left: 44px; margin-bottom: 0.9em; max-width: none;
+}
+ol.steps > li::before {
+  content: counter(step);
+  position: absolute; left: 0; top: 0.1em;
+  width: 28px; height: 28px; line-height: 26px; text-align: center;
+  border: 2px solid var(--text); font-weight: 700; font-size: 0.9rem;
+  background: var(--surface);
+}
+
+.compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 1.4em 0; }
+.compare > * { border: 1px solid var(--hairline); padding: 12px 14px; }
+.compare > * > :first-child { margin-top: 0; }
+.compare > * > :last-child { margin-bottom: 0; }
+.compare h4 { margin-top: 0; }
+@media (max-width: 600px) { .compare { grid-template-columns: 1fr; } }
+
+/* ---------- legend keys --------------------------------------------------- */
+/* <span class="key blue">Client</span> */
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 0.9rem; margin: 0.6em 0 1.2em; }
+.key { white-space: nowrap; }
+.key::before {
+  content: ""; display: inline-block; width: 0.75em; height: 0.75em;
+  margin-right: 0.45em; vertical-align: -1px;
+  border: 2px solid var(--text); background: var(--surface);
+}
+.key.blue::before   { border-color: var(--blue);   background: var(--blue-fill); }
+.key.teal::before   { border-color: var(--teal);   background: var(--teal-fill); }
+.key.green::before  { border-color: var(--green);  background: var(--green-fill); }
+.key.yellow::before { border-color: var(--yellow); background: var(--yellow-fill); }
+.key.orange::before { border-color: var(--orange); background: var(--orange-fill); }
+.key.red::before    { border-color: var(--red);    background: var(--red-fill); }
+.key.violet::before { border-color: var(--violet); background: var(--violet-fill); }
+.key.grey::before   { border-color: var(--grey);   background: var(--grey-fill); }
+.key.solid.blue::before   { background: var(--blue); }
+.key.solid.teal::before   { background: var(--teal); }
+.key.solid.green::before  { background: var(--green); }
+.key.solid.yellow::before { background: var(--yellow); }
+.key.solid.orange::before { background: var(--orange); }
+.key.solid.red::before    { background: var(--red); }
+.key.solid.violet::before { background: var(--violet); }
+.key.solid.grey::before   { background: var(--grey); }
+
+/* ---------- figures ------------------------------------------------------- */
+figure { margin: 1.8em 0; }
+figcaption { color: var(--muted); font-size: 0.9rem; margin-top: 10px; line-height: 1.45; }
+figcaption::before { content: ""; display: inline-block; width: 8px; height: 8px; background: var(--text); margin-right: 8px; vertical-align: 1px; }
+
+/* a diagram sits on a small tldraw canvas */
+figure.diagram > svg,
+figure.diagram > .canvas {
+  display: block; width: 100%; height: auto;
+  border: 1px solid var(--hairline);
+  background-color: var(--surface);
+  background-image: radial-gradient(var(--dot) 1px, transparent 1.2px);
+  background-size: 18px 18px;
+}
+figure.plain > svg { border: 0; background: none; }
+
+figure img, figure video { display: block; max-width: 100%; height: auto; border: 1px solid var(--hairline); }
+figure video { width: 100%; background: #000; }
+figure .links { font-size: 0.85rem; margin-top: 6px; }
+figure .links a + a::before { content: "·"; color: var(--muted); margin: 0 0.5em; }
+
+/* ---------- SVG vocabulary ----------------------------------------------- */
+/* Shapes carry two classes: a kind and a colour.
+   <rect class="shape blue" …>   <circle class="shape solid red" …>
+   <path class="line arrow" …>   <text class="label" …>                     */
+svg { font-family: inherit; overflow: visible; }
+svg text { fill: var(--text); font-size: 14px; }
+svg .label { text-anchor: middle; dominant-baseline: central; }
+svg .small { font-size: 12px; fill: var(--muted); }
+svg .mono  { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; }
+svg .bold  { font-weight: 700; }
+svg .start { text-anchor: start; }
+svg .end   { text-anchor: end; }
+
+svg .shape { fill: var(--surface); stroke: var(--text); stroke-width: 2; stroke-linejoin: miter; stroke-linecap: square; }
+svg .line  { fill: none; stroke: var(--text); stroke-width: 2; stroke-linejoin: miter; stroke-linecap: butt; }
+svg .thin  { stroke-width: 1.25; }
+svg .thick { stroke-width: 3; }
+svg .dashed { stroke-dasharray: 7 5; }
+svg .dotted { stroke-dasharray: 2 4; stroke-linecap: round; }
+svg .ghost  { opacity: 0.35; }
+
+svg .blue.shape   { stroke: var(--blue);   fill: var(--blue-fill); }
+svg .teal.shape   { stroke: var(--teal);   fill: var(--teal-fill); }
+svg .green.shape  { stroke: var(--green);  fill: var(--green-fill); }
+svg .yellow.shape { stroke: var(--yellow); fill: var(--yellow-fill); }
+svg .orange.shape { stroke: var(--orange); fill: var(--orange-fill); }
+svg .red.shape    { stroke: var(--red);    fill: var(--red-fill); }
+svg .violet.shape { stroke: var(--violet); fill: var(--violet-fill); }
+svg .grey.shape   { stroke: var(--grey);   fill: var(--grey-fill); }
+
+svg .solid.blue.shape   { fill: var(--blue); }
+svg .solid.teal.shape   { fill: var(--teal); }
+svg .solid.green.shape  { fill: var(--green); }
+svg .solid.yellow.shape { fill: var(--yellow); }
+svg .solid.orange.shape { fill: var(--orange); }
+svg .solid.red.shape    { fill: var(--red); }
+svg .solid.violet.shape { fill: var(--violet); }
+svg .solid.grey.shape   { fill: var(--grey); }
+svg .on-solid { fill: var(--on-solid); }   /* text placed on a solid shape */
+
+svg .blue.line   { stroke: var(--blue); }
+svg .teal.line   { stroke: var(--teal); }
+svg .green.line  { stroke: var(--green); }
+svg .yellow.line { stroke: var(--yellow); }
+svg .orange.line { stroke: var(--orange); }
+svg .red.line    { stroke: var(--red); }
+svg .violet.line { stroke: var(--violet); }
+svg .grey.line   { stroke: var(--grey); }
+
+svg text.blue   { fill: var(--blue); }
+svg text.teal   { fill: var(--teal); }
+svg text.green  { fill: var(--green); }
+svg text.yellow { fill: var(--yellow); }
+svg text.orange { fill: var(--orange); }
+svg text.red    { fill: var(--red); }
+svg text.violet { fill: var(--violet); }
+svg text.grey   { fill: var(--grey); }
+
+/* arrowheads: <marker id="ah-blue"><path class="ah blue" d="M0,0 L10,5 L0,10 z"/></marker> */
+svg .ah        { fill: var(--text); stroke: none; }
+svg .ah.blue   { fill: var(--blue); }
+svg .ah.teal   { fill: var(--teal); }
+svg .ah.green  { fill: var(--green); }
+svg .ah.yellow { fill: var(--yellow); }
+svg .ah.orange { fill: var(--orange); }
+svg .ah.red    { fill: var(--red); }
+svg .ah.violet { fill: var(--violet); }
+svg .ah.grey   { fill: var(--grey); }
+svg .arrow          { marker-end: url(#ah); }
+svg .arrow.blue     { marker-end: url(#ah-blue); }
+svg .arrow.teal     { marker-end: url(#ah-teal); }
+svg .arrow.green    { marker-end: url(#ah-green); }
+svg .arrow.yellow   { marker-end: url(#ah-yellow); }
+svg .arrow.orange   { marker-end: url(#ah-orange); }
+svg .arrow.red      { marker-end: url(#ah-red); }
+svg .arrow.violet   { marker-end: url(#ah-violet); }
+svg .arrow.grey     { marker-end: url(#ah-grey); }
+
+/* a text label with a background box so it can sit on a line */
+svg .pill { fill: var(--surface); stroke: var(--hairline); stroke-width: 1; }
+
+/* plots */
+svg .axis  { stroke: var(--text); stroke-width: 1.5; fill: none; }
+svg .grid  { stroke: var(--hairline); stroke-width: 1; fill: none; }
+svg .tick  { font-size: 12px; fill: var(--muted); }
+svg .axis-label { font-size: 13px; fill: var(--muted); }
+svg .series { fill: none; stroke: var(--text); stroke-width: 2.5; stroke-linejoin: miter; stroke-linecap: butt; }
+svg .series.blue   { stroke: var(--blue); }
+svg .series.teal   { stroke: var(--teal); }
+svg .series.green  { stroke: var(--green); }
+svg .series.yellow { stroke: var(--yellow); }
+svg .series.orange { stroke: var(--orange); }
+svg .series.red    { stroke: var(--red); }
+svg .series.violet { stroke: var(--violet); }
+svg .series.grey   { stroke: var(--grey); }
+svg .area { stroke: none; fill: var(--grey-fill); opacity: 0.8; }
+svg .area.blue   { fill: var(--blue-fill); }
+svg .area.teal   { fill: var(--teal-fill); }
+svg .area.green  { fill: var(--green-fill); }
+svg .area.yellow { fill: var(--yellow-fill); }
+svg .area.orange { fill: var(--orange-fill); }
+svg .area.red    { fill: var(--red-fill); }
+svg .area.violet { fill: var(--violet-fill); }
+svg .dot { stroke: var(--surface); stroke-width: 1.5; fill: var(--text); }
+svg .dot.blue   { fill: var(--blue); }
+svg .dot.teal   { fill: var(--teal); }
+svg .dot.green  { fill: var(--green); }
+svg .dot.yellow { fill: var(--yellow); }
+svg .dot.orange { fill: var(--orange); }
+svg .dot.red    { fill: var(--red); }
+svg .dot.violet { fill: var(--violet); }
+svg .dot.grey   { fill: var(--grey); }
+svg .bar { stroke-width: 2; fill: var(--grey-fill); stroke: var(--grey); }
+svg .bar.blue   { fill: var(--blue-fill);   stroke: var(--blue); }
+svg .bar.teal   { fill: var(--teal-fill);   stroke: var(--teal); }
+svg .bar.green  { fill: var(--green-fill);  stroke: var(--green); }
+svg .bar.yellow { fill: var(--yellow-fill); stroke: var(--yellow); }
+svg .bar.orange { fill: var(--orange-fill); stroke: var(--orange); }
+svg .bar.red    { fill: var(--red-fill);    stroke: var(--red); }
+svg .bar.violet { fill: var(--violet-fill); stroke: var(--violet); }
+
+/* ---------- quiz ---------------------------------------------------------- */
+details.quiz {
+  display: flow-root;
+  border: 2px solid var(--text);
+  margin: 1.6em 0; padding: 0;
+}
+details.quiz > summary {
+  cursor: pointer; list-style: none;
+  padding: 12px 110px 12px 52px; position: relative; font-weight: 600;
+}
+details.quiz > summary::-webkit-details-marker { display: none; }
+details.quiz > summary::before {
+  content: "Q"; position: absolute; left: 12px; top: 11px;
+  width: 26px; height: 26px; line-height: 26px; text-align: center;
+  background: var(--text); color: var(--surface); font-weight: 700; font-size: 0.85rem;
+}
+details.quiz > summary::after {
+  content: "show answer"; position: absolute; right: 14px; top: 15px;
+  font-weight: 400; font-size: 0.8rem; color: var(--muted); white-space: nowrap;
+}
+details.quiz[open] > summary::after { content: "hide answer"; }
+details.quiz .options { list-style: upper-alpha; margin: 0; padding: 0 16px 8px 52px; }
+details.quiz .options li { max-width: none; }
+details.quiz .answer {
+  border-top: 1px dashed var(--hairline);
+  padding: 12px 16px 12px 52px; position: relative;
+  background: var(--surface-2);
+}
+details.quiz .answer > :last-child { margin-bottom: 0; }
+details.quiz .answer::before {
+  content: "A"; position: absolute; left: 12px; top: 11px;
+  width: 26px; height: 26px; line-height: 22px; text-align: center;
+  border: 2px solid var(--green); color: var(--green); font-weight: 700; font-size: 0.85rem;
+}
+details.quiz[open] .options li.correct { font-weight: 700; color: var(--green); }
+details.quiz[open] .options li.picked:not(.correct) { text-decoration: line-through; color: var(--red); }
+
+/* ---------- theme toggle -------------------------------------------------- */
+.theme-toggle {
+  position: fixed; top: 12px; right: 12px; z-index: 10;
+  font: inherit; font-size: 0.8rem; font-weight: 600;
+  padding: 4px 10px; cursor: pointer;
+  color: var(--text); background: var(--surface); border: 2px solid var(--text);
+}
+.theme-toggle::before { content: "◐ "; }
+
+/* ---------- focus & print ------------------------------------------------- */
+:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+@media print {
+  body { background: #fff; }
+  .page { max-width: none; margin: 0; padding: 0; border: 0; }
+  .theme-toggle { display: none; }
+  details.quiz { break-inside: avoid; }
+  details.quiz:not([open]) .answer { display: block; }
+}
