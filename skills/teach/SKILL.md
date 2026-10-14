@@ -141,12 +141,16 @@ If you catch yourself asserting a fact he'd have to take on faith — foundation
 
 When starting to learn a new topic, create a directory for that topic in the project and a single HTML note in it, `<topic>/notes.html`, copied from `style/template.html`. Everything from the session goes into that note as it happens: the learning goal, the probe results in one or two sentences, the plan and its dependency map, each node's explanation, every quiz with the option he picked, and the visuals. The note is the durable artifact; chat is scratch.
 
-Follow the **notes skill** (`skills/notes/SKILL.md`) for the page structure, colour roles and component classes. In short:
+Follow the **notes skill** (`skills/notes/SKILL.md`) for the page structure, colour roles and component classes, and the **write skill** (`skills/write/SKILL.md`) for the prose. In short:
 
 - Notes are `.html`, styled only by `style/notes-light.css` and `style/notes-dark.css`. No Markdown notes, no inline styles.
 - The page reads top to bottom in dependency order: unconditional truths as `callout truth`, motivation as `callout why`, the compression moment as `callout click`, misconceptions as `callout warn`.
 - Declare the note's colour roles once in a `legend` and keep them consistent across prose `<mark>`s, diagrams and plots.
 - Quizzes are `details.quiz` blocks placed where they happened in the lesson, with the picked option marked.
+
+## Formatting -- the words themselves
+
+Every sentence you write for him, in chat or in the note, follows the **write skill** (`skills/write/SKILL.md`): plain English in the style of Simplified Technical English at the 80% strength. Short sentences, one idea each, active voice, the same word for the same thing, no idiom that does not translate, and every technical word explained at or before its first use. This is not optional polish; English is his second language, and a sentence he has to read twice does not lock in. Run `python3 skills/write/check.py <topic>/notes.html` before you call a note done.
 
 ## Formatting -- chat versus the note
 

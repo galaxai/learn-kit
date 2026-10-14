@@ -37,6 +37,10 @@ The two CSS files are identical below their `:root` token block. If you ever cha
 
 Use `<h2>` for each node of the dependency map and `<h3>` for sub-steps. Do not go deeper than `<h3>`.
 
+## Prose
+
+The words in a note follow the **write skill** (`skills/write/SKILL.md`): Simplified Technical English at the 80% strength. Sentences of at most 25 words (20 for an instruction), one idea each, active voice, one word per meaning, no idioms. Every technical word is explained in a `callout def` at or before its first use. The same rules apply to figure captions, diagram labels, quiz questions and quiz options, not only paragraphs.
+
 ## Colour roles
 
 Eight colours exist: `blue teal green yellow orange red violet grey`. Each has an ink (strokes, text) and a fill (tinted background) in both themes.
@@ -220,7 +224,13 @@ $BIN --headless --disable-gpu --hide-scrollbars --window-size=1100,6000 \
      --screenshot=/tmp/note.png http://127.0.0.1:8765/<topic>/notes.html
 ```
 
-Look at the screenshot for: text escaping a shape, a label crossing a line, a legend on top of a series, an arrow with no head (missing `<defs>`), a `<mark>` or shape whose colour does not match the legend. For dark mode, temporarily swap the two `<link>` `media` attributes to `not all` / `all` in a copy, and remove the script from that copy so it does not reset them. Only claim you checked what you actually looked at.
+Then check the prose:
+
+```bash
+python3 skills/write/check.py <topic>/notes.html
+```
+
+It flags long sentences, -ing forms, passive voice and long words in the note's prose (it skips code, SVG and math). Fix what is real; some flags are false positives. Then look at the screenshot for: text escaping a shape, a label crossing a line, a legend on top of a series, an arrow with no head (missing `<defs>`), a `<mark>` or shape whose colour does not match the legend. For dark mode, temporarily swap the two `<link>` `media` attributes to `not all` / `all` in a copy, and remove the script from that copy so it does not reset them. Only claim you checked what you actually looked at.
 
 ## Don't
 
