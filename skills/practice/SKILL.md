@@ -1,6 +1,6 @@
 ---
 name: practice
-description: "Run a practice session: problems that make already-taught knowledge come to mind on its own and run reliably in new situations. Use when the learner asks to practise, review, drill or do exercises on a topic they were taught (picks targets from <topic>/knowledge.md), or brings a problem from outside to work through. Not for teaching new material — that is the teach skill."
+description: "Run a practice session: problems that make already-taught knowledge come to mind on its own and run reliably in new situations. Use when the learner asks to practise, review, drill or do exercises on a topic they were taught (picks targets from the <topic>/knowledge.md index and its knowledge/ strand files), or brings a problem from outside to work through. Not for teaching new material — that is the teach skill."
 ---
 
 # Practice
@@ -54,7 +54,7 @@ Three templates modify any kind:
 
 Material comes in two ways, and both are normal starts:
 
-- **From the record**: read `<topic>/knowledge.md` and the recent session logs. Targets are claim ids.
+- **From the record**: read the index `<topic>/knowledge.md`, then the strand files in `knowledge/` that hold the weak claims, and the recent session logs. Targets are claim ids.
 - **Free-form**: a topic in the learner's words, a file, a course page, or a problem from outside. Read what they point at yourself.
 
 As soon as there is material for a problem, pose one. At most one short line of orientation first. No warm-up chat, no interview: calibration comes from the first problems.
@@ -132,7 +132,7 @@ A problem the learner brings from outside (homework, an exam question) goes thro
 
 ## Records
 
-Write `<topic>/sessions/YYYY-MM-DD-practice-<slug>.md` as you go (format in `skills/teach/records.md`). For each problem: target claim ids, kind, difficulty, the model solution (written before posing), the hint rungs used, each claimed answer with confidence and the learner's reasoning word for word, the verdict and the miss class. At the end, update "Last evidence" in `knowledge.md` for every claim practised, and list the claims that need teaching rather than practice.
+Write `<topic>/sessions/YYYY-MM-DD-practice-<slug>.md` as you go (format in `skills/teach/records.md`). For each problem: target claim ids, kind, difficulty, the model solution (written before posing), the hint rungs used, each claimed answer with confidence and the learner's reasoning word for word, the verdict and the miss class. At the end, update "Last evidence" in `knowledge/` for every claim practised and the strand rows in `knowledge.md`, and list the claims that need teaching rather than practice.
 
 Code exercises in a course (for example `rust/exercises/`) follow the same rules: interleave earlier lessons, use the hint ladder when the learner is stuck, and retest misses in a new exercise.
 

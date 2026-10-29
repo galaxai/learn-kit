@@ -6,7 +6,7 @@ Work strictly one question at a time: ask, wait, then choose the next question f
 
 ## 1. Read what is already on record
 
-Before the first question, read the topic's records (`records.md`): `knowledge.md`, the latest session logs, and `progress.md` if the topic has one. A strand the learner already showed as solid needs no re-probing. A claim that is only *taught* in the record is not proof they hold it — the session logs are the evidence.
+Before the first question, read the topic's records (`records.md`): the knowledge index `knowledge.md` and the strand files in `knowledge/` that this lesson rests on, the latest session logs, and `progress.md` if the topic has one. A strand the learner already showed as solid needs no re-probing. A claim that is only *taught* in the record is not proof they hold it — the session logs are the evidence.
 
 ## 2. Make the goal concrete — `ask_user_question`
 

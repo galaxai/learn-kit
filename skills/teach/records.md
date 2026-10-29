@@ -7,7 +7,10 @@ Chat disappears. Three kinds of file carry the learning across sessions. Write t
   notes.html          the note: the explanation, the learner reads it again later
   answers/
     notes.md          what the learner typed in the note's quizzes (raw, written by the page)
-  knowledge.md        the knowledge record: claims and chains that were taught
+  knowledge.md        the knowledge record's index: one row per strand, open wrong ideas
+  knowledge/
+    memory.md         the claims and chains of one strand
+    ownership.md
   sessions/
     2026-10-30-teach-pointers.md      one log per session
     2026-11-02-practice-pointers.md
@@ -30,7 +33,7 @@ When the learner says "check my answers":
 1. Read `answers/<note>.md` and the key of each question (`<template class="key">` in the note).
 2. Go through the answers in the chat, one question at a time or in small groups. Read each one with the confidence × verdict table (`questions.md`), taking the confidence from the reasoning: a firm reason counts as sure, a hedge ("maybe", "I think") or a guess as unsure. When it matters and the reasoning does not show it, ask. For an open question, judge the reasoning against the key's model answer and its wrong ideas; a language slip is not a concept slip.
 3. Write the session log (below), with each answer copied word for word from the file.
-4. Write the result into the note under each graded question (`skills/notes/SKILL.md`), then update `knowledge.md`.
+4. Write the result into the note under each graded question (`skills/notes/SKILL.md`), then update the knowledge record (its strand files, then the index).
 
 Leave `answers/<note>.md` as it is after grading. It is the learner's original input, and the note and the log point to it.
 
@@ -87,14 +90,19 @@ Rules:
 - Every question gets its type (`probe`, `predict`, `check`, `practice`) and its node or claim id.
 - A practice log also holds each problem's model solution, written **before** the problem is posed (see the practice skill).
 
-## The knowledge record — `knowledge.md`
+## The knowledge record — `knowledge.md` and `knowledge/`
 
 One per topic. It holds **claims** (single statements, each with a stable id) and **chains** (premises that *together* imply a conclusion). Claims are finer than plan nodes: a node usually yields one to three claims.
 
-```markdown
-# Knowledge record: Rust course
+A long course collects hundreds of claims, too many to read at the start of every session. So the record has two parts:
 
-What was taught, not what is mastered. Evidence is in sessions/.
+- **`knowledge/<strand>.md`** holds the claims and chains of one strand: one area of the topic, such as memory, ownership or lists. The strands are the ones the probe uses.
+- **`knowledge.md`** is the index: one row per strand, and the wrong ideas that are still open. It stays short.
+
+```markdown
+# Strand: memory
+
+Bits and bytes, addresses, pointers, and how Python names and lists use pointers.
 
 ## Claims
 
@@ -108,9 +116,39 @@ What was taught, not what is mastered. Evidence is in sessions/.
 - `name-holds-pointer` + `assign-copies-name` ⇒ `alias-shares-object` — why `b = a` then `b.append(1)` changes `a`.
 ```
 
+```markdown
+# Knowledge record: Rust course
+
+What was taught, not what is mastered. Evidence is in sessions/.
+
+## Strands
+
+| Strand | File | Claims | Weak last time | Last practice |
+|---|---|---|---|---|
+| Memory: bytes, addresses, pointers | `knowledge/memory.md` | 14 | `name-holds-pointer` | 2026-11-02 |
+| Ownership | `knowledge/ownership.md` | 9 | — | — |
+
+## Wrong ideas
+
+- "`b = a` copies the list" (`assign-copies-name`). Found 2026-10-30, teach-pointers. Retest open.
+```
+
 Rules:
 
 - **Ids are permanent.** Lowercase, digits and hyphens. Never rename one; if a claim was wrong, mark it `(withdrawn: reason)` and add a new id.
+- **Ids are unique in the whole topic**, not only in their strand, so a chain can use claims from any strand. Before you add an id, search for it in `knowledge/`.
 - **Taught** is the lesson or session where the claim was taught. **Last evidence** is a short pointer to the latest dated result in a session log — a summary for choosing practice targets, never a replacement for the log.
 - Add claims and chains at the end of each teaching session, for what was actually taught, not what the plan intended.
-- The probe reads this file first; the practice skill picks its targets from it.
+- **Record what was taught, not every fact of the area.** A topic like Python lists has hundreds of facts; the record holds the claims a lesson taught and later chains need.
+- **A chain goes in the strand of the session that taught it**, even when its premises come from other strands. Write each chain on one line, so a search shows all of it.
+- **A new area gets a new strand file.** Split a strand when it grows past about 60 claims. Name it by area, not by lesson number. A claim keeps its id when it moves.
+- **Keep the index true.** After you change a strand file, update its row: the claim count, the weak claims (✗, or right but unsure, last time) and the last practice date. Remove a wrong idea from the index once a later session shows it repaired; the session logs keep the history.
+
+Reading the record:
+
+- The probe and the practice skill read the index first, then open only the strand files the session needs.
+- To check one claim or a few, search instead of reading whole files. Each claim is one table row:
+  - one claim: `grep -rn '^| pointer-def ' <topic>/knowledge/`
+  - the chains that use it: ``grep -rn '`pointer-def`' <topic>/knowledge/``
+  - wrong last time: `grep -rn '✗' <topic>/knowledge/`
+  - never tested: `grep -rn '| — |$' <topic>/knowledge/`

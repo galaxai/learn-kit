@@ -22,7 +22,7 @@ The two CSS files are identical below their `:root` token block. If you ever cha
 
 - One topic, one directory: `<topic>/notes.html`. Split into more files only when a topic clearly has separate lessons (`<topic>/tcp.html`, `<topic>/tls.html`).
 - Everything the note references lives beside it: clip scene source (`.js`), MP4s, demo pages (`demo-<slug>.html`), sample files, plans.
-- The session logs (`sessions/`) and the knowledge record (`knowledge.md`) also live in the topic directory. Their format is in `skills/teach/records.md`.
+- The session logs (`sessions/`) and the knowledge record (`knowledge.md` and `knowledge/`) also live in the topic directory. Their format is in `skills/teach/records.md`.
 - Start from `style/template.html`. Fix the two `<link>` paths and the `highlight.min.js` `<script>` path so they reach `style/` (`../style/…` from `<topic>/`, `../../style/…` one level deeper).
 - Keep the theme toggle button, the marker `<defs>` block and the two scripts from the template (the highlighter and the theme/highlight script). They are the only non-content parts of a note.
 - Leave the `onerror` attributes on the two `<link>` tags and the jsDelivr fallback in the theme/highlight script as they are. They load the published copies of `style/` from the public `galaxai/learn-kit` repo when the local files are missing (T3 Code's file viewer shows a page with no folder around it). Only the local `../` paths change per note.
