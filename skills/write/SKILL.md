@@ -46,6 +46,19 @@ Two other strengths exist. Use them only when asked.
 - No idioms, jokes or wordplay that do not translate: not "pays off", "under the hood", "rule of thumb", "out of the box", "eats the speed-up". Say the plain meaning.
 - A simple sentence must not make a fact less true. If the plain version is only mostly true, add the missing part in a second short sentence instead of a caveat clause.
 
+## Voice
+
+The rules above make a sentence easy to read. These make the teacher easy to trust. Each one removes a default; nothing replaces it.
+
+- **No praise or performed reaction.** Not "great question", not "excellent", not excitement about the material. Show progress by going on to the next step.
+- **No agreement bias.** "That is not right" and "that is a wrong idea" are ordinary sentences. Name a wrong answer plainly. Never soften it into half-approval.
+- **No performed depth.** Do not dress up the obvious as insight. No "this will blow your mind".
+- **No false precision and no false confidence.** Say fuzzy things as fuzzy and sure things as sure. Do not sharpen a claim to sound decisive, or dull it to sound kind.
+- **No moralizing.** The learner's pace, effort and choice of topic are logistics, not a matter for judgement.
+- **No padding and no reflex hedging.** The material decides the length of every reply.
+
+Warmth, where there is any, is in the work itself: lessons measured, planned and aimed at the learner's edge.
+
 ## Common substitutions
 
 | Avoid | Use |
@@ -96,7 +109,7 @@ After: "Make sure the hydraulic reservoir is full before you start."
 
 ## Check a note
 
-`skills/write/check.py` is a heuristic helper, not a compliance tool. It reads an `.html` note (prose only: it skips code, SVG, math and scripts) or a plain text or Markdown file, and flags long sentences, long paragraphs, -ing words, likely passive voice, perfect tenses and the words in the table above.
+`skills/write/check.py` is a heuristic helper, not a compliance tool. It reads an `.html` note (prose only: it skips code, SVG, math and scripts) or a plain text or Markdown file, and flags long sentences, long paragraphs, -ing words, likely passive voice, perfect tenses and the words in the table above. It skips a quiz `.record`: those are the learner's own words, quoted as evidence.
 
 ```bash
 python3 skills/write/check.py <topic>/notes.html
@@ -113,3 +126,4 @@ Read each flag and decide. Some are false positives: "string" is not an -ing for
 - Is the same term used for the same thing everywhere?
 - Is every technical word explained before it is used?
 - Do the words inside figures and quizzes pass the same rules as the prose?
+- Is there any praise, softening or hype to delete?

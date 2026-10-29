@@ -30,7 +30,9 @@
   </defs>
 </svg>
 
-<main class="page">
+<!-- data-lock: each part stays hidden until the questions above it are answered (style/answers.js).
+     Remove it for a reference page that should show everything at once. -->
+<main class="page" data-lock>
   <h1>TOPIC</h1>
   <p class="meta"><span>Goal: ONE SENTENCE</span><span>YYYY-MM-DD</span></p>
 
@@ -45,7 +47,11 @@
        Building blocks (see skills/notes/SKILL.md):
          <div class="callout truth|why|click|warn|def">…</div>
          <figure class="diagram"><svg viewBox="0 0 W H">…</svg><figcaption>…</figcaption></figure>
-         <details class="quiz"><summary>…</summary><ol class="options">…</ol><div class="answer">…</div></details>
+         <div class="quiz" data-q="q1"><div class="ask">…</div><ol class="options">…</ol><template class="key">…</template></div>
+         <div class="quiz predict" data-q="p1">…</div>   (a prediction, asked before the step)
+         <div class="quiz" data-q="q2"><div class="ask">…</div><template class="key">…</template></div>   (an open question: no options)
+         <div class="answers"></div>   (where the answer count and "Copy my answers" go; default: end of the note)
+         <figure class="demo"><iframe src="demo-SLUG.html" height="360" title="…"></iframe><figcaption>…</figcaption></figure>
          <pre data-lang="python"><code>…</code></pre>
   -->
 
@@ -53,6 +59,8 @@
 
 <!-- Syntax highlighting for <pre data-lang="…"><code>. Same ../ depth as the stylesheets. -->
 <script src="../style/highlight.min.js"></script>
+<!-- Answer boxes for <div class="quiz">: saves what the learner types (see style/answers.js). -->
+<script src="../style/answers.js" onerror="var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/gh/galaxai/learn-kit@main/style/answers.js';document.body.appendChild(s)"></script>
 <script>
 (function () {
   var l = document.getElementById('theme-light'), d = document.getElementById('theme-dark');
@@ -65,6 +73,8 @@
     document.documentElement.dataset.theme = t || 'system';
   }
   apply(load());
+  // another tab, or the note around an embedded demo, changed the theme
+  addEventListener('storage', function (e) { if (e.key === 'notes-theme') apply(e.newValue); });
   document.addEventListener('click', function (e) {
     if (!e.target.closest('[data-theme-toggle]')) return;
     var cur = document.documentElement.dataset.theme;

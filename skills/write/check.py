@@ -48,6 +48,8 @@ SENT_SPLIT = re.compile(r"(?<=[.!?])\s+")
 SKIP = {"pre", "code", "svg", "math", "script", "style", "kbd", "head", "title", "button"}
 BLOCK = {"p", "li", "h1", "h2", "h3", "h4", "figcaption", "summary", "td", "th", "dd", "dt",
          "blockquote"}
+# Elements skipped by class: a quiz .record quotes the learner's own words, which are not ours to fix.
+SKIP_CLASS = {"record"}
 
 
 class ProseExtractor(HTMLParser):
@@ -58,10 +60,19 @@ class ProseExtractor(HTMLParser):
         self.paragraphs = []
         self.buf = []
         self.skip_depth = 0
+        self.class_skip = None  # [tag, depth] while inside an element with a SKIP_CLASS class
         self.block = None
         self.line = 0
 
     def handle_starttag(self, tag, attrs):
+        if self.class_skip:
+            if tag == self.class_skip[0]:
+                self.class_skip[1] += 1
+            return
+        if SKIP_CLASS & set((dict(attrs).get("class") or "").split()):
+            self.flush()
+            self.class_skip = [tag, 1]
+            return
         if tag in SKIP:
             self.skip_depth += 1
         elif tag in BLOCK and self.skip_depth == 0:
@@ -70,13 +81,19 @@ class ProseExtractor(HTMLParser):
             self.line = self.getpos()[0]
 
     def handle_endtag(self, tag):
+        if self.class_skip:
+            if tag == self.class_skip[0]:
+                self.class_skip[1] -= 1
+                if self.class_skip[1] == 0:
+                    self.class_skip = None
+            return
         if tag in SKIP:
             self.skip_depth = max(0, self.skip_depth - 1)
         elif tag in BLOCK:
             self.flush()
 
     def handle_data(self, data):
-        if self.skip_depth == 0 and self.block:
+        if self.skip_depth == 0 and not self.class_skip and self.block:
             self.buf.append(data)
 
     def flush(self):

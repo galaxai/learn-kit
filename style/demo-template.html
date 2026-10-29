@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DEMO — demo</title>
+<link rel="icon" href="data:,">
+<!-- Same two stylesheets and the same jsDelivr fallback as a note. Adjust the ../ depth. -->
+<link rel="stylesheet" href="../style/notes-light.css" id="theme-light" media="(prefers-color-scheme: light)" onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/gh/galaxai/learn-kit@main/style/notes-light.css'">
+<link rel="stylesheet" href="../style/notes-dark.css"  id="theme-dark"  media="(prefers-color-scheme: dark)" onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/gh/galaxai/learn-kit@main/style/notes-dark.css'">
+</head>
+<body class="demo">
+
+<!-- One control per parameter. Every control reads its start value from the URL (?name=value),
+     so a headless screenshot can check any state without a mouse. -->
+<form class="controls" onsubmit="return false">
+  <label>NAME <input type="range" id="NAME" min="0" max="10" step="1" value="5"></label>
+  <output for="NAME" id="NAME-out">5</output>
+</form>
+
+<!-- Draw with the notes SVG classes only (shape, line, label, series, …). No fill/stroke attributes. -->
+<svg id="view" viewBox="0 0 640 240" role="img" aria-label="DESCRIBE WHAT THE PICTURE SHOWS"></svg>
+
+<script>
+(function () {
+  // Theme: the stored choice wins; a change in the note around this demo arrives as a storage event.
+  var l = document.getElementById('theme-light'), d = document.getElementById('theme-dark');
+  function apply(t) {
+    if (t === 'light')      { l.media = 'all';     d.media = 'not all'; }
+    else if (t === 'dark')  { l.media = 'not all'; d.media = 'all'; }
+    else { l.media = '(prefers-color-scheme: light)'; d.media = '(prefers-color-scheme: dark)'; }
+  }
+  try { apply(localStorage.getItem('notes-theme')); } catch (e) {}
+  addEventListener('storage', function (e) { if (e.key === 'notes-theme') apply(e.newValue); });
+
+  // Start values from the URL.
+  var params = new URLSearchParams(location.search);
+  document.querySelectorAll('.controls input').forEach(function (input) {
+    if (params.has(input.id)) input.value = params.get(input.id);
+    input.addEventListener('input', draw);
+  });
+
+  var NS = 'http://www.w3.org/2000/svg', view = document.getElementById('view');
+  function el(tag, attrs, text) {
+    var n = document.createElementNS(NS, tag);
+    for (var k in attrs) n.setAttribute(k, attrs[k]);
+    if (text != null) n.textContent = text;
+    return view.appendChild(n);
+  }
+
+  function draw() {
+    var v = Number(document.getElementById('NAME').value);
+    document.getElementById('NAME-out').value = v;
+    view.replaceChildren();
+    // DRAW THE STATE FOR v
+    el('rect', { 'class': 'shape blue', x: 20, y: 20, width: 40 + v * 50, height: 60 });
+  }
+  draw();
+})();
+</script>
+</body>
+</html>

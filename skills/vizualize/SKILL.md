@@ -1,15 +1,15 @@
 ---
 name: visualize
-description: "Add a correct, minimal visual to an HTML note — an inline SVG diagram or plot, or a hand-painted animation clip (p5.brush kit in anim/) — and embed it in the note. Use when an idea is genuinely clearer as a picture: a dependency graph, system/flow, sequence, state machine, tree, comparison, or a spatial/geometric thing (coordinate geometry, number line, vectors, a plot, a physical layout). Outsources authoring+rendering to a maker subagent that verifies the result by looking at it, then you embed the returned markup or file."
+description: "Add a correct, minimal visual to an HTML note — an inline SVG diagram or plot, an interactive demo page the learner operates, or a hand-painted animation clip (p5.brush kit in anim/) — and embed it in the note. Use when an idea is genuinely clearer as a picture: a dependency graph, system/flow, sequence, state machine, tree, comparison, or a spatial/geometric thing (coordinate geometry, number line, vectors, a plot, a physical layout). Outsources authoring+rendering to a maker subagent that verifies the result by looking at it, then you embed the returned markup or file."
 ---
 
 # Visualize
 
 A picture earns its place only when it shows something words can't — shape, structure, direction, relationship, geometry. This skill produces ONE such picture, guarantees it is **correct** (the maker renders it and looks at it before returning), and adds it to the HTML note following the **notes skill** (`skills/notes/SKILL.md`), which owns the look: sharp shapes, the colour roles, the CSS class vocabulary, and the figure markup.
 
-You are the **creative director**. You decide the exact idea and distill it to its fewest carrying elements. The **`mermaid-maker` subagent**, defined in [`agent/vizualize.md`](../../agent/vizualize.md), uses `gpt-6-sol` with `thinking: low` to do the authoring, rendering, visual verification, and saving, then returns either an SVG `<figure>` block or a video filename. You paste that into the note beside the paragraph it illustrates.
+You are the **creative director**. You decide the exact idea and distill it to its fewest carrying elements. The **`mermaid-maker` subagent**, defined in [`agent/vizualize.md`](../../agent/vizualize.md), uses `gpt-6-sol` with `thinking: low` to do the authoring, rendering, visual verification, and saving, then returns an SVG `<figure>` block, a demo page with its `<figure class="demo">` block, or a video filename. You paste that into the note beside the paragraph it illustrates.
 
-Two output forms exist. **Inline SVG** for anything static (structures, flows, sequences, dependency maps, plots, geometry). **An animation clip** (the p5.brush kit in `anim/`) for anything where motion or a state change is the point. Nothing else: no Mermaid in notes, no PNG screenshots of diagrams, no charting libraries, no Manim.
+Three output forms exist. **Inline SVG** for anything static (structures, flows, sequences, dependency maps, plots, geometry). **An interactive demo** for anything the learner should operate: a value to change, a process to step through, a system to run. **An animation clip** (the p5.brush kit in `anim/`) for anything where motion is the point but the learner only needs to watch it. Nothing else: no Mermaid in notes, no PNG screenshots of diagrams, no charting libraries, no Manim.
 
 ## When to visualize (and when not to)
 
@@ -33,7 +33,7 @@ Keep the idea intact but trust the maker to compose; if your brief lists more th
 
 ## Choose and create the visual
 
-Static idea: inline SVG. Motion is the idea: an animation clip. Decide before briefing.
+Static idea: inline SVG. The learner should change something and see the result: an interactive demo. Motion to watch: an animation clip. Decide before briefing. When in doubt between a demo and a clip, prefer the demo: operating an idea teaches more than watching it.
 
 ### Inline SVG (static diagrams and plots)
 
@@ -46,6 +46,19 @@ Use inline SVG for every static picture: structure, flow, sequence, dependency m
 - Plots: `grid`, `axis`, `tick`, `axis-label`, then `area`/`series`/`dot`/`bar`, then a `pill` legend in an empty corner.
 
 The maker writes the `<figure class="diagram">…</figure>` block, renders the note (or a scratch page linking the same stylesheets) with headless Chromium in **both** themes, looks at the screenshot, and fixes overflow, crossings and colour mismatches before returning the block.
+
+### Interactive demo (a `demo-<slug>.html` page beside the note)
+
+Use a demo when the idea is dynamic and the learner learns by changing it: a parameter to sweep, a process to step, a value that overflows, a distribution to sample. Ten seconds of moving a slider teaches more than a paragraph about what the slider would do.
+
+The maker never sees the lesson, so the brief is its entire world. Give it: the one idea the demo must show, every control (name, range, step, start value) and what it changes, what the picture draws for each state, any formula or constant, and the note's colour roles. A vague brief gives a vague demo.
+
+- BAD: "a demo about bytes"
+- GOOD: "One byte as eight orange boxes (role orange = memory), weights 128 to 1 below them, a box filled when its bit is 1. A slider `value` 0–255, start 72, and a +1 button that wraps 255 to 0. Below the boxes, the sum of the weights that are on, '64 + 8 = 72'. Show that a byte is just eight on/off switches, and that it has no room for 256."
+
+The notes skill ("Interactive demos") owns the page format; `style/demo-byte.html` is the reference. The maker tests the demo headlessly at several states in both themes before returning it. Untested demos never reach the note.
+
+**Teach with it.** In the lesson, tell the learner what to do with it and what to watch for, using its control names: "move `value` to 255, then press +1 — what happens?" A demo can carry a prediction quiz: ask what will happen, then let the demo answer.
 
 ### Animation clip (the p5.brush kit in `anim/`)
 
@@ -113,9 +126,11 @@ If rendering is unavailable (no Chromium or ffmpeg), distinguish unrendered sour
 
 ## Embed it in the note
 
-Notes are HTML, so both forms embed natively. Place each figure immediately after the paragraph it illustrates, never grouped at the top or bottom.
+Notes are HTML, so all three forms embed natively. Place each figure immediately after the paragraph it illustrates, never grouped at the top or bottom.
 
 **SVG**: paste the returned `<figure class="diagram">` block, including its `<figcaption>`. Nothing else is needed; the stylesheet and the page's `<defs>` do the rest.
+
+**Demo**: save the page beside the note as `demo-<slug>.html`, then paste the returned `<figure class="demo">` block with its `<figcaption>` and the "Open the demo alone" link.
 
 **Video**: save the MP4 and the scene source beside the note, then:
 

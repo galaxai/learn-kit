@@ -1,6 +1,6 @@
 ---
 name: notes
-description: "Authoring guide for learning notes as HTML pages in this repo. Use whenever you create or edit a note file (teach skill output), add a diagram, plot, quiz, callout or video to one, or need the colour roles and CSS class vocabulary. Notes use the two stylesheets in style/ (light and dark) and inline SVG for all static visuals."
+description: "Authoring guide for learning notes as HTML pages in this repo. Use whenever you create or edit a note file (teach skill output), add a diagram, plot, quiz, callout, video or interactive demo to one, or need the colour roles and CSS class vocabulary. Notes use the two stylesheets in style/ (light and dark) and inline SVG for all static visuals."
 ---
 
 # Notes in HTML
@@ -21,7 +21,8 @@ The two CSS files are identical below their `:root` token block. If you ever cha
 ## Files and paths
 
 - One topic, one directory: `<topic>/notes.html`. Split into more files only when a topic clearly has separate lessons (`<topic>/tcp.html`, `<topic>/tls.html`).
-- Everything the note references lives beside it: clip scene source (`.js`), MP4s, sample files, plans.
+- Everything the note references lives beside it: clip scene source (`.js`), MP4s, demo pages (`demo-<slug>.html`), sample files, plans.
+- The session logs (`sessions/`) and the knowledge record (`knowledge.md`) also live in the topic directory. Their format is in `skills/teach/records.md`.
 - Start from `style/template.html`. Fix the two `<link>` paths and the `highlight.min.js` `<script>` path so they reach `style/` (`../style/…` from `<topic>/`, `../../style/…` one level deeper).
 - Keep the theme toggle button, the marker `<defs>` block and the two scripts from the template (the highlighter and the theme/highlight script). They are the only non-content parts of a note.
 - Leave the `onerror` attributes on the two `<link>` tags and the jsDelivr fallback in the theme/highlight script as they are. They load the published copies of `style/` from the public `galaxai/learn-kit` repo when the local files are missing (T3 Code's file viewer shows a page with no folder around it). Only the local `../` paths change per note.
@@ -32,7 +33,7 @@ The two CSS files are identical below their `:root` token block. If you ever cha
 2. `<p class="meta">` with the goal sentence and the date. Use `<span>` per item.
 3. `<p class="legend">` declaring the colour roles for this note (see below).
 4. Sections in dependency order. Truths first, then each derived step, then the goal. A reader who stops halfway should still hold a consistent picture.
-5. Quizzes where the teaching checked understanding, in place, not collected at the end.
+5. Quizzes where they happened in the lesson, in place, not collected at the end: a prediction before its step, a check after it.
 6. Sources at the bottom, plain links.
 
 Use `<h2>` for each node of the dependency map and `<h3>` for sub-steps. Do not go deeper than `<h3>`.
@@ -114,19 +115,51 @@ Math is MathML, which every current browser renders without a library. If a note
 
 ### Quiz
 
+Notes are taken with an LLM. The learner **types** each answer; the page never shows the right one. The key sits in the note for the LLM, which has the note in context anyway, inside a `<template>` that the browser does not render.
+
 ```html
-<details class="quiz">
-  <summary>Question text?</summary>
+<div class="quiz" data-q="q1">
+  <div class="ask">Question text?</div>
   <ol class="options">
     <li>Claim under belief A</li>
-    <li class="correct">Claim under the correct belief</li>
+    <li>Claim under the correct belief</li>
     <li>Claim under belief C</li>
+    <li>Claim under belief D</li>
   </ol>
-  <div class="answer"><p><strong>B.</strong> Why, in one or two sentences.</p></div>
-</details>
+  <template class="key">
+    <p><strong>B.</strong> Why, in one or two sentences. Which wrong idea each wrong option points to.</p>
+  </template>
+</div>
 ```
 
-Options follow the teach skill's construction rule: bare claims, same shape, no justification in the option. Mark the option the learner actually chose with `class="picked"` when recording a session; it is struck through when the answer is opened.
+- **`data-q`** is the question's permanent id: `p1`, `p2`, … for predictions and `q1`, `q2`, … for the rest, in page order. It shows as the badge (P1, Q4), names the question in the answers file, and must never change once the learner has answered, so a question added later gets the next free number, not a renumbering.
+- **Mix two kinds.** A question with `.options` is for a quick fact or a single wrong idea; its options follow the teach skill's construction rule (`skills/teach/questions.md`): bare claims, same shape, no justification in the option, every distractor believable. A question **without** options is open: the learner writes the answer in their own words. Use it when the reasoning matters more than the pick: "explain why", "show how you got the number". An open question's key has a model answer, what to accept, and the wrong ideas to look for.
+- **Never mark `correct` before grading.** The right option exists only in the key.
+- `style/answers.js` (loaded by the template) makes every ungraded quiz answerable. On a question with options, the learner clicks the option they choose and writes their reasoning in a text box under it; on an open question, the box takes the answer and the reasoning. An "I don't know" button marks an honest blank. There is no confidence field: read how sure the learner was from their reasoning. A `<div class="answers"></div>` marks where the answer count and the **Copy my answers** button go; without it they go at the end of `main`. Put it in the note's "send your answers" section.
+
+**Locking.** With `<main class="page" data-lock>` (the template's default), everything after the first unanswered question is hidden behind a "Locked" box that names the questions to answer and the parts still locked. Quizzes that stand next to each other open as a group, so put the questions that must be seen together side by side. "I don't know" counts as an answer, so the learner is never stuck. Once a part is open it stays open. Because of the lock, a prediction placed before a part really is answered before the part is read. Remove `data-lock` from reference pages that should show everything; add `?unlocked` to the address to preview a locked note in full.
+
+**A prediction** is asked before its step is taught. Add `predict`: it gets a blue border and a "P" badge. Place it directly before the section that answers it.
+
+```html
+<div class="quiz predict" data-q="p1">
+  <div class="ask">This works for one list. What breaks when two names share it?</div>
+  …options, key…
+</div>
+```
+
+**Where the typed answers go.** The page keeps them in the browser while the learner types. Under `bun run dev`, `server.ts` also saves them to `<topic>/answers/<note>.md`: every question with its options, the chosen option (or the written answer), the reasoning and the time. In any other viewer the learner presses **Copy my answers** and pastes the same text into the chat; save it to that file yourself. Grading starts from that file (`skills/teach/records.md`).
+
+**Grading writes the result into the note.** For each answered question: move the key into a visible `.answer` (replace `<template class="key">` with `<div class="answer">`); on an option question mark the right option `class="correct"` and the learner's pick `class="picked"` (struck through if wrong); add a `.record` with their answer, their reasoning, and the verdict. Copy their words exactly, in quotes. Do not fix their English; the write checker skips `.record`. A graded quiz (one with a visible `.answer`) gets no answer box.
+
+```html
+  <div class="answer"><p><strong>B.</strong> Verification only needs the public half. …</p></div>
+  <div class="record">
+    <p><strong>B. Right.</strong> "The private key never leaves the client, so …"</p>
+  </div>
+```
+
+For "I don't know", write that in the record and pick nothing. Older notes use `<details class="quiz">` with a "show answer" toggle; the stylesheets still render it, but write new quizzes in this form.
 
 ### Tables
 
@@ -146,6 +179,12 @@ Every visual is a `<figure>` with a `<figcaption>`. The caption states what the 
   <video controls preload="metadata" src="request.mp4"></video>
   <figcaption>…</figcaption>
   <p class="links"><a href="request.js">Scene source</a><a href="plan.md">Plan</a></p>
+</figure>
+
+<figure class="demo">
+  <iframe src="demo-byte.html" height="230" title="…"></iframe>
+  <figcaption>…</figcaption>
+  <p class="links"><a href="demo-byte.html">Open the demo alone</a></p>
 </figure>
 
 <figure><img src="photo.png" alt="…"><figcaption>…</figcaption></figure>
@@ -208,6 +247,16 @@ Plots are SVG too, in `figure.diagram`.
 
 Animation clips (painted with the kit in `anim/`, see the visualize skill) embed with the native `<video controls>` element, so no preview PNG is required in the note. Keep a `.links` line with the scene source and plan beside the caption. The clip is rendered once on cream paper and looks fine in both themes because the figure frames it. The kit's `ROLE` palette carries the hex values below so the clip's colours match the page.
 
+## Interactive demos
+
+A demo is for an idea the learner should operate: change a value, step a process, run a simulation. It is its own page beside the note, `<topic>/demo-<slug>.html`, embedded with `figure.demo`. Set the iframe `height` attribute to fit the demo; that is the one size attribute allowed. The dev server sidebar hides `demo-` pages, because they live inside their note.
+
+- Start from `style/demo-template.html`. It links the same two stylesheets (with the jsDelivr fallback) and follows the note's theme, also when the learner toggles it in the note around it.
+- `<body class="demo">`, one `.controls` row (`label` + `input type="range"` + `output`, or a `button`), then one SVG drawn by script with the same classes as a static diagram. No CSS, no `style=""`, no hex values, no libraries. The script only creates elements and sets classes and coordinates.
+- Every control reads its start value from the URL (`demo-byte.html?value=255`), so a headless screenshot can check any state.
+- The same drawing rules apply: the note's colour roles, square shapes, seven elements or fewer in view, text inside its shape.
+- `style/demo-byte.html` is a working example (eight bits of one byte, a slider and a +1 button).
+
 ## Themes
 
 Both stylesheets are linked with `prefers-color-scheme` media queries and the toggle button overrides them, remembering the choice in `localStorage`. You do not need to do anything per note beyond keeping the template's head and script. Because all colours come from tokens, a diagram that looks right in light mode looks right in dark mode as long as you used classes and never hex values.
@@ -230,7 +279,9 @@ Then check the prose:
 python3 skills/write/check.py <topic>/notes.html
 ```
 
-It flags long sentences, -ing forms, passive voice and long words in the note's prose (it skips code, SVG and math). Fix what is real; some flags are false positives. Then look at the screenshot for: text escaping a shape, a label crossing a line, a legend on top of a series, an arrow with no head (missing `<defs>`), a `<mark>` or shape whose colour does not match the legend. For dark mode, temporarily swap the two `<link>` `media` attributes to `not all` / `all` in a copy, and remove the script from that copy so it does not reset them. Only claim you checked what you actually looked at.
+It flags long sentences, -ing forms, passive voice and long words in the note's prose (it skips code, SVG and math). Fix what is real; some flags are false positives. For a demo, also screenshot the demo page alone at two or three states through its URL parameters, and check the console is clean: add `--enable-logging=stderr --v=0 --dump-dom` and look for `CONSOLE` or `Uncaught` lines.
+
+Then look at the screenshot for: text escaping a shape, a label crossing a line, a legend on top of a series, an arrow with no head (missing `<defs>`), a `<mark>` or shape whose colour does not match the legend. For dark mode, temporarily swap the two `<link>` `media` attributes to `not all` / `all` in a copy, and remove the script from that copy so it does not reset them. Only claim you checked what you actually looked at.
 
 ## Don't
 

@@ -254,31 +254,70 @@ def check(public_key, challenge, signature):
 
   <h2>Check yourself</h2>
 
-  <details class="quiz">
-    <summary>The server verifies the client's signature. Which key does the server use?</summary>
+  <div class="quiz" data-q="q1">
+    <div class="ask">The server verifies the client's signature. Which key does the server use?</div>
     <ol class="options">
       <li>The client's private key</li>
-      <li class="correct">The client's public key</li>
+      <li class="correct picked">The client's public key</li>
       <li>The server's private key</li>
       <li>The shared session secret</li>
     </ol>
     <div class="answer">
       <p><strong>B.</strong> Verification only ever needs the public half. If the server needed the client's private key, the client would have to send it, which breaks the second truth.</p>
     </div>
-  </details>
+    <div class="record">
+      <p><strong>B. Right.</strong> "The private key never leaves the client, so the server can only have the public one. But I am not sure the server does not also use its own key."</p>
+    </div>
+  </div>
 
-  <details class="quiz">
-    <summary>Why does the server send a <em>fresh</em> challenge each time?</summary>
+  <div class="quiz predict" data-q="p1">
+    <div class="ask">Before we look at the next step: an attacker records one valid signature. What must the server do so that the old signature is useless?</div>
+    <ol class="options">
+      <li>Encrypt the signature on the wire</li>
+      <li class="correct picked">Ask the client to sign different bytes every time</li>
+      <li>Check the signature twice</li>
+      <li>Keep a list of signatures it has already seen</li>
+    </ol>
+    <div class="answer">
+      <p><strong>B.</strong> A signature is only valid for the bytes it signs. If the bytes change on every login, an old signature matches nothing. The next section builds this step.</p>
+    </div>
+    <div class="record">
+      <p><strong>B. Right.</strong> "If the thing to sign is new, the old answer is for the wrong question."</p>
+    </div>
+  </div>
+
+  <div class="quiz" data-q="q2">
+    <div class="ask">Why does the server send a <em>fresh</em> challenge each time?</div>
     <ol class="options">
       <li>To rotate the encryption key</li>
       <li>To measure round-trip latency</li>
-      <li class="correct">So a recorded signature cannot be replayed</li>
+      <li>So a recorded signature cannot be replayed</li>
       <li>To confirm the client supports the algorithm</li>
     </ol>
-    <div class="answer">
+    <template class="key">
       <p><strong>C.</strong> A signature is tied to the exact bytes signed. New bytes, new signature. An old capture verifies against nothing.</p>
-    </div>
-  </details>
+    </template>
+  </div>
+
+  <div class="quiz" data-q="q3">
+    <div class="ask">In your own words: what does a server learn from a valid signature, and what does it still not know?</div>
+    <template class="key">
+      <p><strong>Model answer.</strong> It learns that the other side holds the private key that matches this public key. It does not learn whose key that is: a key is not a person.</p>
+      <p><strong>Accept</strong> any answer with both halves. <strong>Wrong idea to look for:</strong> "the signature proves who the person is". That skips the binding step that <code>known_hosts</code> and <code>authorized_keys</code> do.</p>
+    </template>
+  </div>
+
+  <div class="answers"></div>
+
+  <h2>Try it</h2>
+
+  <p>When the learner should change a value and watch the result, an interactive demo sits after the paragraph. It is its own page beside the note, embedded with an <code>iframe</code>.</p>
+
+  <figure class="demo">
+    <iframe src="demo-byte.html" height="230" title="One byte: move the slider and watch the eight bits"></iframe>
+    <figcaption>One byte. Move the slider, or press +1 at 255 and watch the value go back to 0.</figcaption>
+    <p class="links"><a href="demo-byte.html">Open the demo alone</a></p>
+  </figure>
 
   <h2>Watch it move</h2>
 
@@ -297,6 +336,8 @@ def check(public_key, challenge, signature):
 </main>
 
 <script src="highlight.min.js"></script>
+<!-- Answer boxes for <div class="quiz">: saves what the learner types (see style/answers.js). -->
+<script src="answers.js" onerror="var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/gh/galaxai/learn-kit@main/style/answers.js';document.body.appendChild(s)"></script>
 <script>
 (function () {
   var l = document.getElementById('theme-light'), d = document.getElementById('theme-dark');
@@ -309,6 +350,7 @@ def check(public_key, challenge, signature):
     document.documentElement.dataset.theme = t || 'system';
   }
   apply(load());
+  addEventListener('storage', function (e) { if (e.key === 'notes-theme') apply(e.newValue); });
   document.addEventListener('click', function (e) {
     if (!e.target.closest('[data-theme-toggle]')) return;
     var cur = document.documentElement.dataset.theme;

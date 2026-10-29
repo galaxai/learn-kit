@@ -402,41 +402,127 @@ svg .bar.red    { fill: var(--red-fill);    stroke: var(--red); }
 svg .bar.violet { fill: var(--violet-fill); stroke: var(--violet); }
 
 /* ---------- quiz ---------------------------------------------------------- */
-details.quiz {
+/* div.quiz: the learner types an answer (style/answers.js adds the box); the key is a hidden
+   <template class="key"> that only the LLM reads. details.quiz is the older form with a
+   "show answer" toggle; it stays so older notes still render. */
+.quiz {
   display: flow-root;
   border: 2px solid var(--text);
   margin: 1.6em 0; padding: 0;
 }
-details.quiz > summary {
-  cursor: pointer; list-style: none;
-  padding: 12px 110px 12px 52px; position: relative; font-weight: 600;
+.quiz > .ask, details.quiz > summary {
+  padding: 12px 16px 12px 52px; position: relative; font-weight: 600;
 }
-details.quiz > summary::-webkit-details-marker { display: none; }
-details.quiz > summary::before {
+.quiz > .ask > :last-child { margin-bottom: 0; }
+.quiz > .ask::before, details.quiz > summary::before {
   content: "Q"; position: absolute; left: 12px; top: 11px;
-  width: 26px; height: 26px; line-height: 26px; text-align: center;
+  min-width: 26px; height: 26px; line-height: 26px; padding: 0 4px; box-sizing: border-box; text-align: center;
   background: var(--text); color: var(--surface); font-weight: 700; font-size: 0.85rem;
 }
+.quiz > .ask[data-badge]::before { content: attr(data-badge); }
+details.quiz > summary { cursor: pointer; list-style: none; padding-right: 110px; }
+details.quiz > summary::-webkit-details-marker { display: none; }
 details.quiz > summary::after {
   content: "show answer"; position: absolute; right: 14px; top: 15px;
   font-weight: 400; font-size: 0.8rem; color: var(--muted); white-space: nowrap;
 }
 details.quiz[open] > summary::after { content: "hide answer"; }
-details.quiz .options { list-style: upper-alpha; margin: 0; padding: 0 16px 8px 52px; }
-details.quiz .options li { max-width: none; }
-details.quiz .answer {
+.quiz .options { list-style: upper-alpha; margin: 0; padding: 0 16px 8px 52px; }
+.quiz .options li { max-width: none; }
+.quiz .answer {
   border-top: 1px dashed var(--hairline);
   padding: 12px 16px 12px 52px; position: relative;
   background: var(--surface-2);
 }
-details.quiz .answer > :last-child { margin-bottom: 0; }
-details.quiz .answer::before {
+.quiz .answer > :last-child { margin-bottom: 0; }
+.quiz .answer::before {
   content: "A"; position: absolute; left: 12px; top: 11px;
   width: 26px; height: 26px; line-height: 22px; text-align: center;
   border: 2px solid var(--green); color: var(--green); font-weight: 700; font-size: 0.85rem;
 }
-details.quiz[open] .options li.correct { font-weight: 700; color: var(--green); }
-details.quiz[open] .options li.picked:not(.correct) { text-decoration: line-through; color: var(--red); }
+/* div.quiz gets .correct and .picked only when the LLM grades it, so they show at once */
+div.quiz .options li.correct, details.quiz[open] .options li.correct { font-weight: 700; color: var(--green); }
+div.quiz .options li.picked:not(.correct), details.quiz[open] .options li.picked:not(.correct) { text-decoration: line-through; color: var(--red); }
+
+/* a prediction: asked before the step is taught, so it is about the next idea */
+.quiz.predict { border-color: var(--blue); }
+.quiz.predict > .ask::before, details.quiz.predict > summary::before { content: "P"; background: var(--blue); }
+.quiz.predict > .ask[data-badge]::before { content: attr(data-badge); }
+
+/* the learner's answer box, added by style/answers.js until the question is graded */
+.quiz .reply {
+  display: grid; gap: 8px;
+  border-top: 1px dashed var(--hairline);
+  padding: 12px 16px 12px 52px;
+}
+.quiz .reply textarea {
+  width: 100%; min-height: 4.6em; box-sizing: border-box; resize: vertical;
+  padding: 8px 10px; font: inherit; font-size: 0.95rem;
+  border: 1px solid var(--hairline); background: var(--surface); color: var(--text);
+}
+.quiz .reply textarea:focus { border-color: var(--text); outline: none; }
+.quiz .reply .row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; font-size: 0.85rem; color: var(--muted); }
+.quiz .reply .state { margin-left: auto; }
+.quiz .reply button, .answers button {
+  padding: 3px 10px; font: inherit; font-size: 0.85rem; cursor: pointer;
+  border: 1px solid var(--text); background: var(--surface); color: var(--text);
+}
+.quiz .reply button[aria-pressed="true"] { background: var(--text); color: var(--surface); }
+/* options the learner can choose (answers.js makes them a radio group until the quiz is graded) */
+.quiz .options li[role="radio"] { cursor: pointer; margin-left: -8px; padding: 2px 8px; }
+.quiz .options li[role="radio"]:hover { background: var(--surface-2); }
+.quiz .options li[aria-checked="true"] { background: var(--blue-fill); font-weight: 700; }
+
+/* what the learner answered: the pick, how sure they were, their reasoning in their own words */
+.quiz .record {
+  border-top: 1px dashed var(--hairline);
+  padding: 12px 16px 12px 52px; position: relative;
+  font-size: 0.92rem;
+}
+.quiz .record > :last-child { margin-bottom: 0; }
+.quiz .record::before {
+  content: "L"; position: absolute; left: 12px; top: 11px;
+  width: 26px; height: 26px; line-height: 22px; text-align: center;
+  border: 2px solid var(--muted); color: var(--muted); font-weight: 700; font-size: 0.85rem;
+}
+
+/* the note's answer summary: how many are answered, where they are saved, a copy button */
+.answers {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px;
+  margin: 1.6em 0; padding: 12px 16px;
+  border: 2px dashed var(--hairline); font-size: 0.9rem; color: var(--muted);
+}
+.answers strong { color: var(--text); }
+
+/* the rest of a note waits until the question above is answered (<main data-lock>, style/answers.js) */
+main.page > [data-locked] { display: none; }
+.locked {
+  margin: 1.6em 0; padding: 14px 16px;
+  border: 2px dashed var(--hairline); color: var(--muted); font-size: 0.92rem;
+}
+.locked > p { margin: 0; }
+.locked > p + p { margin-top: 6px; }
+.locked strong { color: var(--text); }
+
+/* ---------- interactive demo ---------------------------------------------- */
+/* A demo is its own page beside the note (demo-<slug>.html), embedded with an iframe.
+   Inside the demo page: <body class="demo">, a .controls row, and SVG drawn with the classes above. */
+figure.demo > iframe { display: block; width: 100%; border: 1px solid var(--hairline); background: var(--surface); }
+body.demo {
+  margin: 0; padding: 16px;
+  background-color: var(--surface);
+  background-image: radial-gradient(var(--dot) 1px, transparent 1.2px);
+  background-size: 18px 18px;
+}
+body.demo > svg { display: block; width: 100%; height: auto; }
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; margin: 0 0 12px; font-size: 0.9rem; }
+.controls label { display: inline-flex; align-items: center; gap: 8px; }
+.controls input[type="range"] { width: 180px; accent-color: var(--text); }
+.controls output { min-width: 4ch; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-weight: 700; }
+.controls button {
+  font: inherit; font-size: 0.85rem; font-weight: 600; padding: 3px 10px; cursor: pointer;
+  color: var(--text); background: var(--surface); border: 2px solid var(--text);
+}
 
 /* ---------- theme toggle -------------------------------------------------- */
 .theme-toggle {
@@ -454,6 +540,6 @@ details.quiz[open] .options li.picked:not(.correct) { text-decoration: line-thro
   body { background: #fff; }
   .page { max-width: none; margin: 0; padding: 0; border: 0; }
   .theme-toggle { display: none; }
-  details.quiz { break-inside: avoid; }
+  .quiz { break-inside: avoid; }
   details.quiz:not([open]) .answer { display: block; }
 }
